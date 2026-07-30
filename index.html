@@ -350,7 +350,6 @@
 <script>
 (function(){
   const STORE_KEY = 'billiard-club-data-v1';
-  const SHARED = true;
 
   let data = {
     settings: {
@@ -358,8 +357,8 @@
       tables: [
         {id:'t1', name:'Stol 1', vip:false, price:40000},
         {id:'t2', name:'Stol 2', vip:false, price:40000},
-        {id:'t5', name:'VIP zal 1', vip:true, price:40000},
-        {id:'t6', name:'VIP zal 2', vip:true, price:40000},
+        {id:'t5', name:'VIP zal 1', vip:true, price:70000},
+        {id:'t6', name:'VIP zal 2', vip:true, price:70000},
       ]
     },
     sessions: {},   // tableId -> {name, phone, start, plan, plannedMinutes}
@@ -387,19 +386,24 @@
     setTimeout(()=> el.remove(), 3500);
   }
 
-  async function save(){
+  function save(){
     try{
-      await window.storage.set(STORE_KEY, JSON.stringify(data), SHARED);
-    }catch(e){ console.error('Saqlashda xatolik', e); }
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    }catch(e){
+      console.error('Saqlashda xatolik', e);
+      toast('Ma\'lumotlarni saqlashda xatolik yuz berdi');
+    }
   }
-  async function load(){
+  function load(){
     try{
-      const res = await window.storage.get(STORE_KEY, SHARED);
-      if(res && res.value){
-        const parsed = JSON.parse(res.value);
+      const raw = localStorage.getItem(STORE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
         data = Object.assign(data, parsed);
       }
-    }catch(e){ /* birinchi marta ishga tushganda kalit topilmaydi - bu normal */ }
+    }catch(e){
+      console.error('Yuklashda xatolik', e);
+    }
   }
 
   function tableById(id){ return data.settings.tables.find(t=>t.id===id); }
@@ -768,4 +772,3 @@
 </script>
 </body>
 </html>
-
